@@ -15,6 +15,9 @@
         android:theme="@style/Theme.PrmProject"
         tools:targetApi="31">
         <activity
+            android:name=".view.CheckoutActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.CartActivity"
             android:exported="false" />
         <activity
