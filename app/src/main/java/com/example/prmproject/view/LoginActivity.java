@@ -1,4 +1,4 @@
-package com.example.prmproject;
+package com.example.prmproject.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prmproject.Database.SqlServer.SqlConnection;
+import com.example.prmproject.R;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
