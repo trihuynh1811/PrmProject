@@ -36,6 +36,15 @@
             android:name=".view.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".AdminProductActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".AdminViewOrderActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".AdminViewOrderDetailActivity"
+            android:exported="false"/>
+        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>
