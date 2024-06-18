@@ -1,4 +1,4 @@
-package com.example.prmproject;
+package com.example.prmproject.view;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.prmproject.R;
 import com.example.prmproject.adapter.ProductAdapter;
 import com.example.prmproject.model.Product;
 

@@ -36,13 +36,13 @@
             android:name=".view.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".AdminProductActivity"
+            android:name=".view.AdminProductActivity"
             android:exported="false"/>
         <activity
-            android:name=".AdminViewOrderActivity"
+            android:name=".view.AdminViewOrderActivity"
             android:exported="false"/>
         <activity
-            android:name=".AdminViewOrderDetailActivity"
+            android:name=".view.AdminViewOrderDetailActivity"
             android:exported="false"/>
         <activity
             android:name=".view.MainActivity"

@@ -1,8 +1,11 @@
-package com.example.prmproject;
+package com.example.prmproject.view;
 
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.prmproject.R;
+
 public class AdminViewOrderDetailActivity extends AppCompatActivity {
     private TextView textViewOrderDetailIdValue, textViewProductIdValue, textViewQuantityValue, textViewPriceValue, textViewOrderIdValue;
 
