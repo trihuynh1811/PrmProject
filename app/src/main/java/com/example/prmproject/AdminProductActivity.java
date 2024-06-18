@@ -9,6 +9,10 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.prmproject.adapter.ProductAdapter;
+import com.example.prmproject.model.Product;
+
 import java.util.ArrayList;
 import java.util.List;
 public class AdminProductActivity extends AppCompatActivity {

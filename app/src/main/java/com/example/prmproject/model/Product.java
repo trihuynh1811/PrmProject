@@ -1,4 +1,4 @@
-package com.example.prmproject;
+package com.example.prmproject.model;
 
 public class Product {
     private String name;

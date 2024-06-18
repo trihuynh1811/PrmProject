@@ -1,4 +1,4 @@
-package com.example.prmproject;
+package com.example.prmproject.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.prmproject.model.Product;
+import com.example.prmproject.R;
+
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {

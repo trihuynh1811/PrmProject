@@ -1,4 +1,4 @@
-package com.example.prmproject;
+package com.example.prmproject.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.prmproject.AdminViewOrderDetailActivity;
+import com.example.prmproject.model.Order;
+import com.example.prmproject.R;
+
 import java.util.List;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
     private Context context;
