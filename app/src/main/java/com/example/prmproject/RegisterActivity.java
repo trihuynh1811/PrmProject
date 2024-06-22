@@ -33,7 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
         username = findViewById(R.id.usernameEditTxt);
         password = findViewById(R.id.passwordEditText);
         email = findViewById(R.id.emailEditTxt);
-        registerBtn = findViewById(R.id.loginBtn);
+        registerBtn = findViewById(R.id.registerBtn);
         tologin = findViewById(R.id.tologin);
 
         SqlConnection sqlConnection = new SqlConnection();
