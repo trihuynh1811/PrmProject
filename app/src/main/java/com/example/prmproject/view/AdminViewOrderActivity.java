@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prmproject.R;
 import com.example.prmproject.adapter.OrderAdapter;
-import com.example.prmproject.model.Order;
+import com.example.prmproject.adapter.model.Order;
 
 import java.util.ArrayList;
 import java.util.List;

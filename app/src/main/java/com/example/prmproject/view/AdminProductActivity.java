@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prmproject.R;
 import com.example.prmproject.adapter.ProductAdapter;
-import com.example.prmproject.model.Product;
+import com.example.prmproject.adapter.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;

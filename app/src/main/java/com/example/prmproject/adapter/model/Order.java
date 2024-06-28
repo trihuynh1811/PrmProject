@@ -1,4 +1,4 @@
-package com.example.prmproject.model;
+package com.example.prmproject.adapter.model;
 
 public class Order {
     private String orderId;
