@@ -46,4 +46,14 @@ public class LoginResponse {
     public void setRefresh_token(String refresh_token) {
         this.refresh_token = refresh_token;
     }
+
+    @Override
+    public String toString() {
+        return "LoginResponse{" +
+                "status='" + status + '\'' +
+                ", userInfo=" + userInfo +
+                ", access_token='" + access_token + '\'' +
+                ", refresh_token='" + refresh_token + '\'' +
+                '}';
+    }
 }
