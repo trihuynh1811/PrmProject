@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.prmproject.Database.SqlServer.SqlConnection;
 import com.example.prmproject.R;
 
 import java.sql.Connection;
@@ -36,10 +35,6 @@ public class RegisterActivity extends AppCompatActivity {
         email = findViewById(R.id.emailEditTxt);
         registerBtn = findViewById(R.id.registerBtn);
         tologin = findViewById(R.id.tologin);
-
-        SqlConnection sqlConnection = new SqlConnection();
-        connection = sqlConnection.CONN();
-        sqlConnection.checkConnection(connection);
 
         tologin.setOnClickListener(new View.OnClickListener() {
             @Override
