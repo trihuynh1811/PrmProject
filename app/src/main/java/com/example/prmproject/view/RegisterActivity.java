@@ -12,27 +12,36 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prmproject.R;
+import com.example.prmproject.api.APIClient;
+import com.example.prmproject.dto.AuthenticationRequest;
+import com.example.prmproject.dto.AuthenticationResponse;
+import com.example.prmproject.service.AuthService;
+import com.google.gson.Gson;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
-    EditText username, password, email;
+    EditText username, password, email, phone, confirmPassword;
     Button registerBtn;
-    Connection connection;
     TextView tologin;
+    AuthService authService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        authService = APIClient.getClient().create(AuthService.class);
+
         username = findViewById(R.id.usernameEditTxt);
         password = findViewById(R.id.passwordEditText);
         email = findViewById(R.id.emailEditTxt);
+        phone = findViewById(R.id.etPhone);
+        confirmPassword = findViewById(R.id.etConfirmpassword);
         registerBtn = findViewById(R.id.registerBtn);
         tologin = findViewById(R.id.tologin);
 
@@ -43,61 +52,74 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
         });
+
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(username.getText().toString().isEmpty()){
+                if (username.getText().toString().isEmpty()) {
                     username.setError("please enter username");
                     return;
                 }
-                if(password.getText().toString().isEmpty()){
+                if (password.getText().toString().isEmpty()) {
                     password.setError("please enter password");
                     return;
                 }
-                if(email.getText().toString().isEmpty()){
+                if (email.getText().toString().isEmpty()) {
                     email.setError("please enter email");
                     return;
                 }
-
-                try {
-                    String sqlcmd = "insert into users(accountName, email, password) values(?, ?, ?)";
-                    PreparedStatement preparedStatement = connection.prepareStatement(sqlcmd);
-                    preparedStatement.setString(1, username.getText().toString());
-                    preparedStatement.setString(2, email.getText().toString());
-                    preparedStatement.setString(3, password.getText().toString());
-                    boolean success = preparedStatement.execute();
-                    Log.i("insert result", String.valueOf(success));
-                    Toast.makeText(getApplicationContext(), "new user created", Toast.LENGTH_SHORT).show();
-                    connection.close();
-                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                if (phone.getText().toString().isEmpty()) {
+                    phone.setError("please enter phone");
+                    return;
                 }
+                if (confirmPassword.getText().toString().isEmpty()) {
+                    confirmPassword.setError("please confirm your password");
+                    return;
+                }
+                if (!password.getText().toString().equals(confirmPassword.getText().toString())) {
+                    confirmPassword.setError("passwords do not match");
+                    return;
+                }
+
+                AuthenticationRequest authRequest = new AuthenticationRequest(
+                        username.getText().toString(),
+                        email.getText().toString(),
+                        password.getText().toString(),
+                        phone.getText().toString()
+                );
+                Log.d("RegisterRequest", new Gson().toJson(authRequest));
+
+                Call<AuthenticationResponse> call = authService.register(authRequest);
+                call.enqueue(new Callback<AuthenticationResponse>() {
+                    @Override
+                    public void onResponse(Call<AuthenticationResponse> call, Response<AuthenticationResponse> response) {
+                        if (response.isSuccessful()) {
+                            AuthenticationResponse authResponse = response.body();
+                            if (authResponse != null && authResponse.getStatus().equals("Email is exist")) {
+                                Toast.makeText(RegisterActivity.this, "Email is exist: ", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "Registration successful: ", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            }
+                        } else {
+                            try {
+                                String errorBody = response.errorBody().string();
+                                Log.e("RegisterError", errorBody);
+                                Toast.makeText(RegisterActivity.this, "Registration failed: " + errorBody, Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Log.e("RegisterError", "Error parsing error body", e);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AuthenticationResponse> call, Throwable t) {
+                        Log.e("RegisterError", t.getMessage());
+                        Toast.makeText(RegisterActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
-        });
-    }
-
-    public void connect(){
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(() -> {
-            try{
-                if(connection == null){
-                    Log.e("error connect to sql server", "error");
-                }
-                else{
-                    Log.e("successfully connect to sql server", "connected");
-                }
-            }catch(Exception e){
-                throw new RuntimeException(e);
-            }
-
-            runOnUiThread(() -> {
-                try {
-                    Thread.sleep(1000);
-                }catch (InterruptedException e){
-                    throw new RuntimeException(e);
-                }
-            });
         });
     }
 }
