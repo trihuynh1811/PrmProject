@@ -66,6 +66,14 @@ tools:context=".view.LoginActivity">
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/black"
             app:cornerRadius = "20dp"/>
+        <TextView
+            android:id="@+id/forgotpass"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="@string/b_n_qu_n_m_t_kh_u"
+            android:gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="15dp"/>
 
     </LinearLayout>
 

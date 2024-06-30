@@ -27,7 +27,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
     EditText password, email;
     Button loginBtn;
-    TextView toregister;
+    TextView toregister,forgotPass;
     AuthService authService;
 
     @Override
@@ -41,11 +41,17 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.emailEditTxt);
         loginBtn = findViewById(R.id.loginBtn);
         toregister = findViewById(R.id.toregister);
-
+        forgotPass = findViewById(R.id.forgotpass);
         toregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
+            }
+        });
+        forgotPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), ForgotPassword.class));
             }
         });
 
