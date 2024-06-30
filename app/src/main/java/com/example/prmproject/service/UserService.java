@@ -18,14 +18,9 @@ public interface UserService {
     Call<List<User>> getAllUser();
 
     @GET(USER + "/{id}")
-    Call<User> getTraineeById(@Path("id") Object id);
-
-    @POST(USER)
-    Call<User> createTrainee(@Body User trainee);
+    Call<User> getUserById(@Path("id") Object id);
 
     @PUT(USER + "/{id}")
-    Call<User> updateTrainee(@Path("id") Object id, @Body User trainee);
+    Call<User> updateUser(@Path("id") Object id, @Body User user);
 
-    @DELETE(USER + "/{id}")
-    Call<User> deleteTrainee(@Path("id") Object id);
 }
