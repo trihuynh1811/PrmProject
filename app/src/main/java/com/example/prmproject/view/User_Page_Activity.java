@@ -20,13 +20,14 @@ import com.example.prmproject.dto.LoginResponse;
 public class User_Page_Activity extends AppCompatActivity {
     LoginResponse loginResponse;
     TextView tvName,tvEmail;
-    Button logout;
+    Button logout,btnHome;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_page);
         logout = findViewById(R.id.btnLogout);
+        btnHome =findViewById(R.id.btnHome);
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);
 
@@ -39,6 +40,12 @@ public class User_Page_Activity extends AppCompatActivity {
             Log.e("User_Page_Activity", "No LoginResponse received");
         }
 
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        });
         tvName.setText(loginResponse.getUserInfo().getAccountName());
         tvEmail.setText(loginResponse.getUserInfo().getEmail());
         logout.setOnClickListener(v -> {
