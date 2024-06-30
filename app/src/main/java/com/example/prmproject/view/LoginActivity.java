@@ -71,9 +71,11 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             LoginResponse loginResponse = response.body();
                             Log.d("LoginResponse", loginResponse != null ? loginResponse.toString() : "No response body");
-                            if(loginResponse.getUserInfo().getRole().equals("CUSTOMER")){
+                            if(loginResponse != null && loginResponse.getUserInfo().getRole().equals("CUSTOMER")){
                                 Toast.makeText(LoginActivity.this, "Login successful: ", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("loginResponse", loginResponse);
+                                startActivity(intent);
                                 finish();
                             }
                             else {

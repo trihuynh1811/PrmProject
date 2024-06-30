@@ -1,6 +1,9 @@
 package com.example.prmproject.models;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable {
     private int usersID;
     private String accountName;
     private String avatar;
@@ -10,17 +13,54 @@ public class User {
     private boolean userStatus;
     private double accountBalance;
     private String role;
+    private boolean enabled;
+    private String username;
 
-    public User(int usersID, String accountName, String avatar, String email, String password, String phone, boolean userStatus, double accountBalance, String role) {
-        this.usersID = usersID;
-        this.accountName = accountName;
-        this.avatar = avatar;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.userStatus = userStatus;
-        this.accountBalance = accountBalance;
-        this.role = role;
+
+    protected User(Parcel in) {
+        usersID = in.readInt();
+        accountName = in.readString();
+        avatar = in.readString();
+        email = in.readString();
+        password = in.readString();
+        phone = in.readString();
+        userStatus = in.readByte() != 0;
+        accountBalance = in.readDouble();
+        role = in.readString();
+        enabled = in.readByte() != 0;
+        username = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(usersID);
+        dest.writeString(accountName);
+        dest.writeString(avatar);
+        dest.writeString(email);
+        dest.writeString(password);
+        dest.writeString(phone);
+        dest.writeByte((byte) (userStatus ? 1 : 0));
+        dest.writeDouble(accountBalance);
+        dest.writeString(role);
+        dest.writeByte((byte) (enabled ? 1 : 0));
+        dest.writeString(username);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public int getUsersID() {
@@ -95,6 +135,22 @@ public class User {
         this.role = role;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -107,6 +163,8 @@ public class User {
                 ", userStatus=" + userStatus +
                 ", accountBalance=" + accountBalance +
                 ", role='" + role + '\'' +
+                ", enabled=" + enabled +
+                ", username='" + username + '\'' +
                 '}';
     }
 }

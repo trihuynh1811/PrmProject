@@ -1,8 +1,11 @@
 package com.example.prmproject.dto;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.example.prmproject.models.User;
 
-public class LoginResponse {
+public class LoginResponse implements Parcelable {
     private String status;
     private User userInfo;
     private String access_token;
@@ -13,6 +16,38 @@ public class LoginResponse {
         this.userInfo = userInfo;
         this.access_token = access_token;
         this.refresh_token = refresh_token;
+    }
+
+    protected LoginResponse(Parcel in) {
+        status = in.readString();
+        userInfo = in.readParcelable(User.class.getClassLoader());
+        access_token = in.readString();
+        refresh_token = in.readString();
+    }
+
+    public static final Creator<LoginResponse> CREATOR = new Creator<LoginResponse>() {
+        @Override
+        public LoginResponse createFromParcel(Parcel in) {
+            return new LoginResponse(in);
+        }
+
+        @Override
+        public LoginResponse[] newArray(int size) {
+            return new LoginResponse[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(status);
+        dest.writeParcelable((Parcelable) userInfo, flags);
+        dest.writeString(access_token);
+        dest.writeString(refresh_token);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public String getStatus() {
