@@ -43,7 +43,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 holder.productDescription.setText(product.getDescription());
             }
             if (holder.productPrice != null) {
-                holder.productPrice.setText("$ " + product.getPrice());
+                holder.productPrice.setText(product.getPrice() +"VNĐ");
             }
 
             // Load product image using Picasso
