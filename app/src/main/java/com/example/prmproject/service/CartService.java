@@ -1,16 +1,22 @@
 package com.example.prmproject.service;
 
+import com.example.prmproject.dto.AddToCartRequest;
+import com.example.prmproject.dto.CartResponse;
 import com.example.prmproject.models.Cart;
 import com.example.prmproject.models.Product;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface CartService {
     String CART ="cart";
     @GET("cart/{id}")
     Call<List<Cart>> getCartForCustomer(@Path("id") int cartId);
+    @POST(CART)
+    Call<CartResponse> addToCart(@Body AddToCartRequest addToCartRequest);
 }

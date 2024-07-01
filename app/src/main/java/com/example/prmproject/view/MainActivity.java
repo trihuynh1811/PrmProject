@@ -1,6 +1,7 @@
 package com.example.prmproject.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
@@ -17,11 +18,14 @@ import android.widget.Toast;
 import com.example.prmproject.R;
 import com.example.prmproject.adapter.ProductAdapter;
 import com.example.prmproject.api.APIClient;
+import com.example.prmproject.dto.AddToCartRequest;
+import com.example.prmproject.dto.CartResponse;
 import com.example.prmproject.dto.LoginResponse;
 import com.example.prmproject.models.Category;
 import com.example.prmproject.models.Product;
 import com.example.prmproject.models.User;
 import com.example.prmproject.service.AuthService;
+import com.example.prmproject.service.CartService;
 import com.example.prmproject.service.CategoryService;
 import com.example.prmproject.service.ProductService;
 
@@ -31,17 +35,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ProductAdapter.OnAddToCartClickListener {
 
-    ImageButton profile,btnCart;
+    ImageButton profile, btnCart;
     Spinner spinnerCategory;
     CategoryService categoryService;
     ProductService productService;
+    CartService cartService;
     private RecyclerView rvProductList;
     private ProductAdapter productAdapter;
     private List<Product> productList;
+    private LoginResponse loginResponse;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
         categoryService = APIClient.getClient().create(CategoryService.class);
         productService = APIClient.getClient().create(ProductService.class);
-        // Lấy data từ login response
-        LoginResponse loginResponse = getIntent().getParcelableExtra("loginResponse");
+        cartService = APIClient.getClient().create(CartService.class);
+
+        // Get login response from intent
+        loginResponse = getIntent().getParcelableExtra("loginResponse");
 
         if (loginResponse != null) {
             Log.d("MainActivity", "LoginResponse received: " + loginResponse.toString());
@@ -60,8 +67,13 @@ public class MainActivity extends AppCompatActivity {
 
         spinnerCategory = findViewById(R.id.spinnerCategory);
         profile = findViewById(R.id.profile);
-        btnCart = (ImageButton) findViewById(R.id.btnCart);
+        btnCart = findViewById(R.id.btnCart);
         rvProductList = findViewById(R.id.rvProductList);
+
+        // Set up RecyclerView
+        fetchProducts();
+
+        // Set up click listeners
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        spinnerCategory = findViewById(R.id.spinnerCategory);
+
+        // Fetch categories
         fetchCategories();
-        fetchProducts();
     }
 
     private void fetchCategories() {
@@ -113,8 +126,11 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful()) {
                     productList = response.body();
-                    productAdapter = new ProductAdapter(productList);
-                    rvProductList.setAdapter(productAdapter);
+                    if (productList != null) {
+                        productAdapter = new ProductAdapter(productList, MainActivity.this); // Pass MainActivity as listener
+                        rvProductList.setAdapter(productAdapter);
+                        rvProductList.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    }
                 } else {
                     Log.e("Product", "Response failed");
                     Log.e("Product", "Response failed with code: " + response.code());
@@ -128,5 +144,37 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "API call failed", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // Implement method from ProductAdapter.OnAddToCartClickListener
+    @Override
+    public void onAddToCartClick(int position) {
+        if (position != RecyclerView.NO_POSITION && productList != null) {
+            int productID = productList.get(position).getProductID();
+            int customerID = loginResponse.getUserInfo().getUsersID();
+
+            AddToCartRequest addToCartRequest = new AddToCartRequest(customerID, productID);
+
+            Call<CartResponse> call = cartService.addToCart(addToCartRequest);
+            call.enqueue(new Callback<CartResponse>() {
+                @Override
+                public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
+                    if (response.isSuccessful()) {
+                        CartResponse cartResponse = response.body();
+                        if (cartResponse != null) {
+                            Toast.makeText(MainActivity.this, cartResponse.getStatus(), Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.e("MainActivity", "Failed to add to cart: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CartResponse> call, Throwable t) {
+                    Log.e("MainActivity", "API call failed: " + t.getMessage());
+                    Toast.makeText(MainActivity.this, "Failed to add to cart", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

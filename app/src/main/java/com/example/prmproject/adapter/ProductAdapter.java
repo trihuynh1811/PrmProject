@@ -3,6 +3,7 @@ package com.example.prmproject.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,9 +19,11 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     private List<Product> productList;
+    private OnAddToCartClickListener addToCartClickListener;
 
-    public ProductAdapter(List<Product> productList) {
+    public ProductAdapter(List<Product> productList, OnAddToCartClickListener listener) {
         this.productList = productList;
+        this.addToCartClickListener = listener;
     }
 
     @NonNull
@@ -35,28 +38,29 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Product product = productList.get(position);
 
         if (product != null) {
-            // Set product data to views if they are not null
-            if (holder.productName != null) {
-                holder.productName.setText(product.getProductName());
-            }
-            if (holder.productDescription != null) {
-                holder.productDescription.setText(product.getDescription());
-            }
-            if (holder.productPrice != null) {
-                holder.productPrice.setText(product.getPrice() +"VNĐ");
-            }
+            holder.productName.setText(product.getProductName());
+            holder.productDescription.setText(product.getDescription());
+            holder.productPrice.setText(product.getPrice() + "VNĐ");
 
             // Load product image using Picasso
-            if (holder.productImage != null) {
-                if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
-                    Picasso.get()
-                            .load(product.getProductImages().get(0).getImageUrl())
-                            .error(R.drawable.checkout_image_item)
-                            .into(holder.productImage);
-                } else {
-                    holder.productImage.setImageResource(R.drawable.checkout_image_item); // Default placeholder
-                }
+            if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
+                Picasso.get()
+                        .load(product.getProductImages().get(0).getImageUrl())
+                        .error(R.drawable.checkout_image_item)
+                        .into(holder.productImage);
+            } else {
+                holder.productImage.setImageResource(R.drawable.checkout_image_item); // Default placeholder
             }
+
+            // Handle click on addToCartButton
+            holder.addToCart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (addToCartClickListener != null) {
+                        addToCartClickListener.onAddToCartClick(position);
+                    }
+                }
+            });
         }
     }
 
@@ -68,6 +72,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productName, productDescription, productPrice;
+        Button addToCart;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +80,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             productName = itemView.findViewById(R.id.productName);
             productDescription = itemView.findViewById(R.id.productDescription);
             productPrice = itemView.findViewById(R.id.productPrice);
+            addToCart = itemView.findViewById(R.id.addToCartButton);
         }
     }
+
+    // Interface to handle click on addToCartButton
+    public interface OnAddToCartClickListener {
+        void onAddToCartClick(int position);
+    }
 }
+

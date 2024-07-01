@@ -46,15 +46,6 @@
             android:name=".view.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".view.AdminProductActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.AdminViewOrderActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.AdminViewOrderDetailActivity"
-            android:exported="false" />
-        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>
