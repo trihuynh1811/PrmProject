@@ -25,7 +25,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class CartActivity extends AppCompatActivity implements CartAdapter.OnDeleteClickListener {
+public class CartActivity extends AppCompatActivity implements CartAdapter.OnDeleteClickListener, CartAdapter.OnQuantityChangeListener {
     private RecyclerView rvItemCart;
     private CartAdapter cartAdapter;
     private CartService cartService;
@@ -61,7 +61,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
                 if (response.isSuccessful()) {
                     List<Cart> cartList = response.body();
                     Log.d("CartResponse", cartList != null ? cartList.toString() : "No response body");
-                    cartAdapter = new CartAdapter(cartList, CartActivity.this);
+                    cartAdapter = new CartAdapter(cartList, CartActivity.this, CartActivity.this);
                     rvItemCart.setAdapter(cartAdapter);
                 } else {
                     Toast.makeText(CartActivity.this, "Failed to load cart", Toast.LENGTH_SHORT).show();
@@ -73,6 +73,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
                 Toast.makeText(CartActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
         tvHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,4 +104,45 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
             }
         });
     }
+
+    @Override
+    public void onQuantityChange(int cartId, int position, boolean isIncrement) {
+        Call<Cart> call = isIncrement ? cartService.upQuantity(cartId) : cartService.downQuantity(cartId);
+        call.enqueue(new Callback<Cart>() {
+            @Override
+            public void onResponse(Call<Cart> call, Response<Cart> response) {
+                if (response.isSuccessful()) {
+                    Cart updatedCart = response.body();
+                    if (updatedCart != null) {
+                        cartAdapter.updateItemQuantity(position, updatedCart.getQuantity());
+                    } else {
+                        cartAdapter.updateItemQuantityFailed(position);
+                    }
+                } else {
+                    int statusCode = response.code();
+                    switch (statusCode) {
+                        case 404:
+                            Toast.makeText(CartActivity.this, "Cart not found", Toast.LENGTH_SHORT).show();
+                            Log.e("CartActivity", "Cart not found. Response code: " + statusCode);
+                            break;
+                        case 409:
+                            Toast.makeText(CartActivity.this, "Quantity fail", Toast.LENGTH_SHORT).show();
+                            Log.e("CartActivity", "Quantity exceeds available stock. Response code: " + statusCode);
+                            break;
+                        default:
+                            Toast.makeText(CartActivity.this, "Failed to update quantity", Toast.LENGTH_SHORT).show();
+                            Log.e("CartActivity", "Failed to update quantity. Response code: " + statusCode);
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Cart> call, Throwable t) {
+                Toast.makeText(CartActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }
+

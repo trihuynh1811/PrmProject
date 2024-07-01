@@ -19,14 +19,20 @@ import java.util.List;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
     private List<Cart> cartList;
     private OnDeleteClickListener onDeleteClickListener;
+    private OnQuantityChangeListener onQuantityChangeListener;
 
     public interface OnDeleteClickListener {
         void onDeleteClick(int cartId, int position);
     }
 
-    public CartAdapter(List<Cart> cartList, OnDeleteClickListener onDeleteClickListener) {
+    public interface OnQuantityChangeListener {
+        void onQuantityChange(int cartId, int position, boolean isIncrement);
+    }
+
+    public CartAdapter(List<Cart> cartList, OnDeleteClickListener onDeleteClickListener, OnQuantityChangeListener onQuantityChangeListener) {
         this.cartList = cartList;
         this.onDeleteClickListener = onDeleteClickListener;
+        this.onQuantityChangeListener = onQuantityChangeListener;
     }
 
     @NonNull
@@ -41,10 +47,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         Cart cartItem = cartList.get(position);
         ProductCartDTO product = cartItem.getProductCartDTO();
         if (product != null) {
+            // Thiết lập các giá trị cho view holder
             holder.productName.setText(product.getProductName());
             holder.productPrice.setText(String.valueOf(product.getPrice()));
             holder.productQuantity.setText(String.valueOf(cartItem.getQuantity()));
 
+            // Load hình ảnh sản phẩm (nếu có)
             if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
                 String imageUrl = product.getProductImages().get(0).getImageUrl();
                 Picasso.get().load(imageUrl).into(holder.productImage);
@@ -52,17 +60,46 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 holder.productImage.setImageResource(R.drawable.checkout_image_item);
             }
 
+            // Xử lý sự kiện khi nhấn vào nút Xóa
             holder.ivDelete.setOnClickListener(v -> {
                 if (onDeleteClickListener != null) {
                     onDeleteClickListener.onDeleteClick(cartItem.getId(), position);
                 }
             });
+
+            // Xử lý sự kiện khi nhấn vào nút Giảm số lượng
+            holder.ivMinus.setOnClickListener(v -> {
+                if (onQuantityChangeListener != null) {
+                    onQuantityChangeListener.onQuantityChange(cartItem.getId(), position, false);
+                }
+            });
+
+            // Xử lý sự kiện khi nhấn vào nút Tăng số lượng
+            holder.ivPlus.setOnClickListener(v -> {
+                if (onQuantityChangeListener != null) {
+                    onQuantityChangeListener.onQuantityChange(cartItem.getId(), position, true);
+                }
+            });
         }
     }
 
+    public void updateItemQuantity(int position, int newQuantity) {
+        cartList.get(position).setQuantity(newQuantity);
+        notifyItemChanged(position);
+    }
+
+    // Phương thức xử lý khi API thất bại
+    public void updateItemQuantityFailed(int position) {
+        // Xử lý khi cập nhật số lượng thất bại (nếu cần)
+    }
     @Override
     public int getItemCount() {
         return cartList.size();
+    }
+
+    public void updateItem(int position, Cart updatedCart) {
+        cartList.set(position, updatedCart);
+        notifyItemChanged(position);
     }
 
     public void removeItem(int position) {
@@ -72,7 +109,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     public static class CartViewHolder extends RecyclerView.ViewHolder {
         TextView productName, productPrice, productQuantity;
-        ImageView productImage, ivDelete;
+        ImageView productImage, ivDelete, ivMinus, ivPlus;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,6 +118,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             productQuantity = itemView.findViewById(R.id.tvQuantity);
             productImage = itemView.findViewById(R.id.ivAvatar);
             ivDelete = itemView.findViewById(R.id.ivDelete);
+            ivMinus = itemView.findViewById(R.id.ivMinus);
+            ivPlus = itemView.findViewById(R.id.ivPlus);
         }
     }
 }
