@@ -43,7 +43,7 @@
             android:layout_marginTop="20dp"
             android:text="Cửa hàng"
             />
-        <Button
+<!--        <Button
             android:id="@+id/btnCart"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:backgroundTint="#10000000"
             android:layout_marginTop="20dp"
             android:text="Giỏ hàng của tôi"
-            />
+            />-->
         <Button
             android:id="@+id/btnOrder"
             android:layout_width="240dp"

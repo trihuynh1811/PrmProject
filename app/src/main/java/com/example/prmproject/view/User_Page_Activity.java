@@ -32,7 +32,7 @@ public class User_Page_Activity extends AppCompatActivity {
         tvEmail = findViewById(R.id.tvEmail);
 
         // Lấy data từ login response
-        loginResponse = getIntent().getParcelableExtra("loginResponse");
+        loginResponse = getIntent().getParcelableExtra("loginResponseUser");
 
         if (loginResponse != null) {
             Log.d("User_Page_Activity", "LoginResponse received: " + loginResponse.toString());
@@ -43,7 +43,9 @@ public class User_Page_Activity extends AppCompatActivity {
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                Intent intent = new Intent(User_Page_Activity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
         tvName.setText(loginResponse.getUserInfo().getAccountName());

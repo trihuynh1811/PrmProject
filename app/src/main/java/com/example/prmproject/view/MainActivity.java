@@ -3,6 +3,7 @@ package com.example.prmproject.view;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +33,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton profile;
+    ImageButton profile,btnCart;
     Spinner spinnerCategory;
     CategoryService categoryService;
     ProductService productService;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ProductAdapter productAdapter;
     private List<Product> productList;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,12 +60,21 @@ public class MainActivity extends AppCompatActivity {
 
         spinnerCategory = findViewById(R.id.spinnerCategory);
         profile = findViewById(R.id.profile);
+        btnCart = (ImageButton) findViewById(R.id.btnCart);
         rvProductList = findViewById(R.id.rvProductList);
+        btnCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CartActivity.class);
+                intent.putExtra("loginResponseCart", loginResponse);
+                startActivity(intent);
+            }
+        });
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, User_Page_Activity.class);
-                intent.putExtra("loginResponse", loginResponse);
+                intent.putExtra("loginResponseUser", loginResponse);
                 startActivity(intent);
             }
         });
