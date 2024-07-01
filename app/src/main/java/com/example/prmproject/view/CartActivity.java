@@ -126,7 +126,11 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
                             Log.e("CartActivity", "Cart not found. Response code: " + statusCode);
                             break;
                         case 409:
-                            Toast.makeText(CartActivity.this, "Quantity fail", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CartActivity.this, "Quantity exceeds available stock", Toast.LENGTH_SHORT).show();
+                            Log.e("CartActivity", "Quantity exceeds available stock. Response code: " + statusCode);
+                            break;
+                        case 406:
+                            Toast.makeText(CartActivity.this, "Quantity cannot be less than 1", Toast.LENGTH_SHORT).show();
                             Log.e("CartActivity", "Quantity exceeds available stock. Response code: " + statusCode);
                             break;
                         default:
