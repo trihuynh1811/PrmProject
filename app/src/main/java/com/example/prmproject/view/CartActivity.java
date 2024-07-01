@@ -25,7 +25,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class CartActivity extends AppCompatActivity {
+public class CartActivity extends AppCompatActivity implements CartAdapter.OnDeleteClickListener {
     private RecyclerView rvItemCart;
     private CartAdapter cartAdapter;
     private CartService cartService;
@@ -40,7 +40,6 @@ public class CartActivity extends AppCompatActivity {
         rvItemCart = findViewById(R.id.rvItemCart);
         rvItemCart.setLayoutManager(new LinearLayoutManager(this));
         tvHome = findViewById(R.id.tvHome);
-
         loginResponse = getIntent().getParcelableExtra("loginResponseCart");
         if (loginResponse != null) {
             Log.d("Cart", "LoginResponse received: " + loginResponse.toString());
@@ -62,7 +61,7 @@ public class CartActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<Cart> cartList = response.body();
                     Log.d("CartResponse", cartList != null ? cartList.toString() : "No response body");
-                    cartAdapter = new CartAdapter(cartList);
+                    cartAdapter = new CartAdapter(cartList, CartActivity.this);
                     rvItemCart.setAdapter(cartAdapter);
                 } else {
                     Toast.makeText(CartActivity.this, "Failed to load cart", Toast.LENGTH_SHORT).show();
@@ -84,4 +83,24 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onDeleteClick(int cartId, int position) {
+        Call<Void> call = cartService.deleteCartItem(cartId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    cartAdapter.removeItem(position);
+                    Toast.makeText(CartActivity.this, "Item removed from cart", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(CartActivity.this, "Failed to remove item from cart", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(CartActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
