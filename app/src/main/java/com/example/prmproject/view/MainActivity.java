@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         productService = APIClient.getClient().create(ProductService.class);
         cartService = APIClient.getClient().create(CartService.class);
 
-        // Get login response from intent
         loginResponse = getIntent().getParcelableExtra("loginResponse");
 
         if (loginResponse != null) {
@@ -92,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             }
         });
 
-        // Fetch categories
         fetchCategories();
     }
 
@@ -146,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         });
     }
 
-    // Implement method from ProductAdapter.OnAddToCartClickListener
     @Override
     public void onAddToCartClick(int position) {
         if (position != RecyclerView.NO_POSITION && productList != null) {
