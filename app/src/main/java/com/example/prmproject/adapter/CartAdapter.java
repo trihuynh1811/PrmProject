@@ -89,7 +89,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
 
     public void updateItemQuantityFailed(int position) {
-        // Xử lý khi cập nhật số lượng thất bại (nếu cần)
+
     }
     @Override
     public int getItemCount() {
