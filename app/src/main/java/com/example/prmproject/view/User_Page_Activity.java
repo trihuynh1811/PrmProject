@@ -20,7 +20,7 @@ import com.example.prmproject.dto.LoginResponse;
 public class User_Page_Activity extends AppCompatActivity {
     LoginResponse loginResponse;
     TextView tvName,tvEmail;
-    Button logout,btnHome;
+    Button logout,btnHome,btnOrder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class User_Page_Activity extends AppCompatActivity {
         btnHome =findViewById(R.id.btnHome);
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);
-
+        btnOrder = findViewById(R.id.btnOrder);
         // Lấy data từ login response
         loginResponse = getIntent().getParcelableExtra("loginResponseUser");
 
@@ -40,6 +40,15 @@ public class User_Page_Activity extends AppCompatActivity {
             Log.e("User_Page_Activity", "No LoginResponse received");
         }
 
+        btnOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(User_Page_Activity.this, OrderHistoryActivity.class);
+
+                startActivity(intent);
+                finish();
+            }
+        });
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
