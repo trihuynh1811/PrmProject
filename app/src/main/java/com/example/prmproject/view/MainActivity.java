@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.prmproject.R;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     private ProductAdapter productAdapter;
     private List<Product> productList;
     private LoginResponse loginResponse;
+    private TextView cartBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         profile = findViewById(R.id.profile);
         btnCart = findViewById(R.id.btnCart);
         rvProductList = findViewById(R.id.rvProductList);
+        cartBadge = findViewById(R.id.cartBadge);
 
         // Set up RecyclerView
         fetchProducts();
@@ -90,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         });
 
         fetchCategories();
+        fetchCartQuantity();
     }
 
     private void fetchCategories() {
@@ -177,5 +181,32 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             }
         });
     }
+    private void fetchCartQuantity() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("userId", 0);
+        Call<Integer> call = cartService.getQuantityInCart(userId);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int quantity = response.body();
+                    Log.d("QuantityResponse", "Quantity :" + quantity);
+                    if (quantity > 0) {
+                        cartBadge.setVisibility(View.VISIBLE);
+                        cartBadge.setText(String.valueOf(quantity));
+                    } else {
+                        cartBadge.setVisibility(View.GONE);
+                    }
+                } else {
+                    Log.e("MainActivity", "Failed to fetch cart quantity: " + response.code());
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Log.e("MainActivity", "API call failed: " + t.getMessage());
+                Log.e("Quantity", "API call failed", t);
+            }
+        });
+    }
 }

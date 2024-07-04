@@ -208,23 +208,37 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <ImageButton
-                        android:id="@+id/btnCart"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="4dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/cart"
-                        android:background="@android:color/transparent"
-                        android:padding="8dp" />
-                </LinearLayout>
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
 
+                        <ImageButton
+                            android:id="@+id/btnCart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="4dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/cart"
+                            android:background="@android:color/transparent"
+                            android:padding="8dp" />
+
+                        <TextView
+                            android:id="@+id/cartBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|top"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"
+                            android:background="@drawable/badge_background"
+                            android:visibility="gone"
+                            android:padding="4dp" />
+                    </FrameLayout>
+                </LinearLayout>
 
             </LinearLayout>
 
         </com.google.android.material.bottomappbar.BottomAppBar>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
