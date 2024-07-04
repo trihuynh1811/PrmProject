@@ -15,6 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PrmProject"
         tools:targetApi="31">
+
+        <activity
+            android:name=".view.OrderDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.OrderHistoryActivity"
+            android:exported="false" />
         <activity
             android:name=".view.ForgotPassword"
             android:exported="false" />

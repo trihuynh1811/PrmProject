@@ -11,9 +11,6 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.prmproject.R;
 import com.example.prmproject.dto.LoginResponse;
@@ -21,7 +18,7 @@ import com.example.prmproject.dto.LoginResponse;
 public class User_Page_Activity extends AppCompatActivity {
     LoginResponse loginResponse;
     TextView tvName,tvEmail;
-    Button logout,btnHome;
+    Button logout,btnHome,btnOrder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +28,7 @@ public class User_Page_Activity extends AppCompatActivity {
         btnHome =findViewById(R.id.btnHome);
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);
+        btnOrder = findViewById(R.id.btnOrder);
 
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
@@ -45,7 +43,15 @@ public class User_Page_Activity extends AppCompatActivity {
         } else {
             Log.e("User_Page_Activity", "No LoginResponse received");
         }
-
+        btnOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(User_Page_Activity.this, OrderHistoryActivity.class);
+                intent.putExtra("loginResponseUser",loginResponse);
+                startActivity(intent);
+                finish();
+            }
+        });
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
