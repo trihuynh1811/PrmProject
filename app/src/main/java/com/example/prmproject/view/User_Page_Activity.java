@@ -47,9 +47,9 @@ public class User_Page_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(User_Page_Activity.this, OrderHistoryActivity.class);
-                intent.putExtra("loginResponseUser",loginResponse);
+
                 startActivity(intent);
-                finish();
+
             }
         });
         btnHome.setOnClickListener(new View.OnClickListener() {

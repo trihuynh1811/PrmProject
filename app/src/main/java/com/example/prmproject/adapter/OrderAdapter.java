@@ -2,6 +2,7 @@ package com.example.prmproject.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +21,18 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class OrderAdapter extends  RecyclerView.Adapter<OrderAdapter.OrderViewHolder>{
-    LoginResponse loginResponse;
+
+    SharedPreferences sharedPreferences;
     String pattern = "yyyy-MM-dd HH:mm";
 
     private Context context;
     SimpleDateFormat df = new SimpleDateFormat(pattern);
     public List<Order> orderList;
 
-    public OrderAdapter( List<Order> orderList,Context context,LoginResponse loginResponse) {
+    public OrderAdapter( List<Order> orderList,Context context,    SharedPreferences sharedPreferences) {
         this.context = context;
         this.orderList = orderList;
-        this.loginResponse = loginResponse;
+        this.sharedPreferences = sharedPreferences;
     }
 
     @NonNull
@@ -43,13 +45,15 @@ public class OrderAdapter extends  RecyclerView.Adapter<OrderAdapter.OrderViewHo
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order orderItem = orderList.get(position);
+        String username = "";
+        username =  sharedPreferences.getString("name",username);
         if (orderItem != null) {
             // khả năng bug
             holder.OrderID.setText("Order ID : " + Integer.toString(orderItem.getOrderID()));
             holder.Total.setText("Total Price : " + Double.toString(orderItem.getTotal()));
             holder.OrderDate.setText("Order Date : " + orderItem.getOrderDate());
             holder.OrderStatus.setText("Order Status : " + orderItem.getOrderStatus());
-            holder.CustomerName.setText("Customer Name : " + loginResponse.getUserInfo().getUsername());
+            holder.CustomerName.setText("Customer Name : " + username);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
