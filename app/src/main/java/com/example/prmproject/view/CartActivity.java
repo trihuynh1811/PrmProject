@@ -1,6 +1,7 @@
 package com.example.prmproject.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -54,7 +55,9 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
     }
 
     private void fetchCartData() {
-        Call<List<Cart>> call = cartService.getCartForCustomer(loginResponse.getUserInfo().getUsersID());
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("userId", 0);
+        Call<List<Cart>> call = cartService.getCartForCustomer(userId);
         call.enqueue(new Callback<List<Cart>>() {
             @Override
             public void onResponse(Call<List<Cart>> call, Response<List<Cart>> response) {

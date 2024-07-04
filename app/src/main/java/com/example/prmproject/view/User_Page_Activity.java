@@ -2,6 +2,7 @@ package com.example.prmproject.view;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,11 @@ public class User_Page_Activity extends AppCompatActivity {
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String email = sharedPreferences.getString("email", null);
+        String name = sharedPreferences.getString("name",null);
+        String accessToken = sharedPreferences.getString("access_token", null);
+        String refreshToken = sharedPreferences.getString("refresh_token", null);
         // Lấy data từ login response
         loginResponse = getIntent().getParcelableExtra("loginResponseUser");
 
@@ -48,13 +54,17 @@ public class User_Page_Activity extends AppCompatActivity {
                 finish();
             }
         });
-        tvName.setText(loginResponse.getUserInfo().getAccountName());
-        tvEmail.setText(loginResponse.getUserInfo().getEmail());
+        tvName.setText(name);
+        tvEmail.setText(email);
         logout.setOnClickListener(v -> {
             new AlertDialog.Builder(User_Page_Activity.this)
                     .setTitle("Thoát")
                     .setMessage("Bạn có chắc chắn muốn thoát ứng dụng?")
                     .setPositiveButton("Thoát", (d, w) -> {
+                        // delete user response
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.clear();
+                        editor.apply();
                         Intent intent = new Intent(User_Page_Activity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
