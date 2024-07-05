@@ -21,7 +21,8 @@ import com.example.prmproject.dto.LoginResponse;
 public class User_Page_Activity extends AppCompatActivity {
     LoginResponse loginResponse;
     TextView tvName,tvEmail;
-    Button logout,btnHome;
+    Button logout,btnHome,btnAddress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +30,7 @@ public class User_Page_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_user_page);
         logout = findViewById(R.id.btnLogout);
         btnHome =findViewById(R.id.btnHome);
+        btnAddress = findViewById(R.id.btnAddress);
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);
 
@@ -71,6 +73,14 @@ public class User_Page_Activity extends AppCompatActivity {
                     })
                     .setNegativeButton("Huỷ", null)
                     .show();
+        });
+
+        btnAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(User_Page_Activity.this, MapsActivity.class);
+                startActivity(intent);
+            }
         });
 
     }
