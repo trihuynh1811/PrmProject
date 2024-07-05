@@ -33,6 +33,7 @@ public class User_Page_Activity extends AppCompatActivity {
         btnAddress = findViewById(R.id.btnAddress);
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);
+        btnOrder = findViewById(R.id.btnOrder);
 
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
