@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.prmproject.R;
 import com.example.prmproject.dto.LoginResponse;
@@ -18,7 +21,8 @@ import com.example.prmproject.dto.LoginResponse;
 public class User_Page_Activity extends AppCompatActivity {
     LoginResponse loginResponse;
     TextView tvName,tvEmail;
-    Button logout,btnHome,btnOrder;
+    Button logout,btnHome,btnAddress,btnOrder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,9 +30,9 @@ public class User_Page_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_user_page);
         logout = findViewById(R.id.btnLogout);
         btnHome =findViewById(R.id.btnHome);
+        btnAddress = findViewById(R.id.btnAddress);
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);
-        btnOrder = findViewById(R.id.btnOrder);
 
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
@@ -77,6 +81,14 @@ public class User_Page_Activity extends AppCompatActivity {
                     })
                     .setNegativeButton("Huỷ", null)
                     .show();
+        });
+
+        btnAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(User_Page_Activity.this, MapsActivity.class);
+                startActivity(intent);
+            }
         });
 
     }
