@@ -58,6 +58,9 @@
             android:name=".view.RegisterActivity"
             android:exported="false" />
         <activity
+            android:name=".view.ProductDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>

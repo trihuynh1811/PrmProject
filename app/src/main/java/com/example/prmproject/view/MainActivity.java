@@ -27,6 +27,7 @@ import com.example.prmproject.models.Product;
 import com.example.prmproject.service.CartService;
 import com.example.prmproject.service.CategoryService;
 import com.example.prmproject.service.ProductService;
+import com.example.prmproject.utils.RecyclerItemClickListener;
 
 import java.util.List;
 
@@ -69,6 +70,21 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         btnCart = findViewById(R.id.btnCart);
         rvProductList = findViewById(R.id.rvProductList);
         cartBadge = findViewById(R.id.cartBadge);
+
+        rvProductList.addOnItemTouchListener(new RecyclerItemClickListener(this, rvProductList, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Product selectedProduct = productList.get(position);
+                Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
+                intent.putExtra("productId", selectedProduct.getProductID());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongItemClick(View view, int position) {
+                // Do nothing
+            }
+        }));
 
         // Set up RecyclerView
         fetchProducts();
