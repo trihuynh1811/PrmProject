@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import com.example.prmproject.dto.LoginResponse;
 import com.example.prmproject.models.Cart;
 import com.example.prmproject.service.CartService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -30,13 +32,15 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
     private CartAdapter cartAdapter;
     private CartService cartService;
     private LoginResponse loginResponse;
-    private TextView tvHome;
+    private TextView tvHome, btnCheckout;
+    List<Cart> cartList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        btnCheckout = findViewById(R.id.btnCheckout);
         rvItemCart = findViewById(R.id.rvItemCart);
         rvItemCart.setLayoutManager(new LinearLayoutManager(this));
         tvHome = findViewById(R.id.tvHome);
@@ -49,6 +53,12 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
 
         Retrofit retrofit = APIClient.getClient();
         cartService = retrofit.create(CartService.class);
+        btnCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toCheckout();
+            }
+        });
 
         fetchCartData();
     }
@@ -59,7 +69,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
             @Override
             public void onResponse(Call<List<Cart>> call, Response<List<Cart>> response) {
                 if (response.isSuccessful()) {
-                    List<Cart> cartList = response.body();
+                    cartList = response.body();
                     Log.d("CartResponse", cartList != null ? cartList.toString() : "No response body");
                     cartAdapter = new CartAdapter(cartList, CartActivity.this, CartActivity.this);
                     rvItemCart.setAdapter(cartAdapter);
@@ -146,6 +156,13 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
                 Toast.makeText(CartActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    void toCheckout(){
+        Intent intent = new Intent(getApplicationContext(), CheckoutActivity.class);
+        intent.putExtra("loginResponse", loginResponse);
+        startActivity(intent);
+        finish();
     }
 
 }
