@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,10 +27,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProductDetailActivity extends AppCompatActivity {
-    private TextView productName, productDescription, productPrice;
-    private ImageView productImage;
-    private Button addToCartButton, backButton;
+    private TextView productName, productDescription, productPrice, cartBadge;
+    private ImageView backButton, productImage;
+    private Button addToCartButton;
+    private ImageButton profileButton, homeButton, walletButton, cartButton;
     private int productId;
+    private CartService cartService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         productImage = findViewById(R.id.product_image);
         addToCartButton = findViewById(R.id.add_to_cart_button);
         backButton = findViewById(R.id.back_button);
+        profileButton = findViewById(R.id.profile);
+        homeButton = findViewById(R.id.homePage);
+        walletButton = findViewById(R.id.wallet);
+        cartButton = findViewById(R.id.btnCart);
+        cartBadge = findViewById(R.id.cartBadge);
 
         productId = getIntent().getIntExtra("productId", -1);
         if (productId != -1) {
@@ -51,7 +59,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         addToCartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Thêm sản phẩm vào giỏ hàng
                 addToCart(productId);
             }
         });
@@ -62,6 +69,40 @@ public class ProductDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ProductDetailActivity.this, User_Page_Activity.class);
+                startActivity(intent);
+            }
+        });
+
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        walletButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Implement your wallet functionality here
+            }
+        });
+
+        cartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ProductDetailActivity.this, CartActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cartService = APIClient.getClient().create(CartService.class);
+        fetchCartQuantity();
     }
 
     private void fetchProductDetails(int productId) {
@@ -90,12 +131,10 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void addToCart(int productId) {
-        // Lấy userId từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         int userId = sharedPreferences.getInt("userId", 0);
 
         AddToCartRequest addToCartRequest = new AddToCartRequest(userId, productId);
-        CartService cartService = APIClient.getClient().create(CartService.class);
         Call<CartResponse> call = cartService.addToCart(addToCartRequest);
 
         call.enqueue(new Callback<CartResponse>() {
@@ -111,6 +150,35 @@ public class ProductDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<CartResponse> call, Throwable t) {
                 Toast.makeText(ProductDetailActivity.this, "API call failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchCartQuantity() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("userId", 0);
+        Call<Integer> call = cartService.getQuantityInCart(userId);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int quantity = response.body();
+                    Log.d("QuantityResponse", "Quantity :" + quantity);
+                    if (quantity > 0) {
+                        cartBadge.setVisibility(View.VISIBLE);
+                        cartBadge.setText(String.valueOf(quantity));
+                    } else {
+                        cartBadge.setVisibility(View.GONE);
+                    }
+                } else {
+                    Log.e("ProductDetailActivity", "Failed to fetch cart quantity: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Log.e("ProductDetailActivity", "API call failed: " + t.getMessage());
+                Log.e("Quantity", "API call failed", t);
             }
         });
     }
