@@ -49,7 +49,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         if (product != null) {
             holder.productName.setText(product.getProductName());
-            holder.productPrice.setText(String.valueOf(product.getPrice()));
+            holder.productPrice.setText(String.format("%.2f", cartItem.getPrice()));  // Format price
             holder.productQuantity.setText(String.valueOf(cartItem.getQuantity()));
 
             if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
@@ -59,20 +59,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 holder.productImage.setImageResource(R.drawable.checkout_image_item);
             }
 
-            // Xử lý sự kiện khi nhấn vào nút Xóa
             holder.ivDelete.setOnClickListener(v -> {
                 if (onDeleteClickListener != null) {
                     onDeleteClickListener.onDeleteClick(cartItem.getId(), position);
                 }
             });
 
-
             holder.ivMinus.setOnClickListener(v -> {
                 if (onQuantityChangeListener != null) {
                     onQuantityChangeListener.onQuantityChange(cartItem.getId(), position, false);
                 }
             });
-
 
             holder.ivPlus.setOnClickListener(v -> {
                 if (onQuantityChangeListener != null) {
@@ -82,10 +79,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         }
     }
 
-    public void updateItemQuantity(int position, int newQuantity) {
-        cartList.get(position).setQuantity(newQuantity);
+
+    public void updateItemQuantity(int position, int newQuantity, double newPrice) {
+        Cart cart = cartList.get(position);
+        cart.setQuantity(newQuantity);
+        cart.setPrice(newPrice);
         notifyItemChanged(position);
     }
+
 
 
     public void updateItemQuantityFailed(int position) {

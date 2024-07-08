@@ -5,6 +5,15 @@ public class Cart {
     private int id;
     private ProductCartDTO productCartDTO;
     private int quantity;
+    private double price;
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
     public int getId() {
         return id;

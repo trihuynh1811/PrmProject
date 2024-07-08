@@ -127,7 +127,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
                 if (response.isSuccessful()) {
                     Cart updatedCart = response.body();
                     if (updatedCart != null) {
-                        cartAdapter.updateItemQuantity(position, updatedCart.getQuantity());
+                        cartAdapter.updateItemQuantity(position, updatedCart.getQuantity(), updatedCart.getPrice());
                     } else {
                         cartAdapter.updateItemQuantityFailed(position);
                     }
@@ -160,6 +160,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnDel
             }
         });
     }
+
 
     void toCheckout(){
         Intent intent = new Intent(getApplicationContext(), CheckoutActivity.class);
