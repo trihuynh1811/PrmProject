@@ -138,8 +138,8 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        tools:layout_editor_absoluteX="68dp"
+        tools:layout_editor_absoluteY="20dp">
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/app_bar"
@@ -217,21 +217,21 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginTop="4dp"
-                            android:scaleType="fitCenter"
-                            android:src="@drawable/cart"
                             android:background="@android:color/transparent"
-                            android:padding="8dp" />
+                            android:padding="8dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/cart" />
 
                         <TextView
                             android:id="@+id/cartBadge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="end|top"
+                            android:background="@drawable/badge_background"
+                            android:padding="4dp"
                             android:textColor="@android:color/black"
                             android:textSize="16sp"
-                            android:background="@drawable/badge_background"
-                            android:visibility="gone"
-                            android:padding="4dp" />
+                            android:visibility="gone" />
                     </FrameLayout>
                 </LinearLayout>
 
