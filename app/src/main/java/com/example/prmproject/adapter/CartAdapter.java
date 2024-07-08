@@ -46,13 +46,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
         Cart cartItem = cartList.get(position);
         ProductCartDTO product = cartItem.getProductCartDTO();
+
         if (product != null) {
-            // Thiết lập các giá trị cho view holder
             holder.productName.setText(product.getProductName());
             holder.productPrice.setText(String.valueOf(product.getPrice()));
             holder.productQuantity.setText(String.valueOf(cartItem.getQuantity()));
 
-            // Load hình ảnh sản phẩm (nếu có)
             if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
                 String imageUrl = product.getProductImages().get(0).getImageUrl();
                 Picasso.get().load(imageUrl).into(holder.productImage);
@@ -67,14 +66,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 }
             });
 
-            // Xử lý sự kiện khi nhấn vào nút Giảm số lượng
+
             holder.ivMinus.setOnClickListener(v -> {
                 if (onQuantityChangeListener != null) {
                     onQuantityChangeListener.onQuantityChange(cartItem.getId(), position, false);
                 }
             });
 
-            // Xử lý sự kiện khi nhấn vào nút Tăng số lượng
+
             holder.ivPlus.setOnClickListener(v -> {
                 if (onQuantityChangeListener != null) {
                     onQuantityChangeListener.onQuantityChange(cartItem.getId(), position, true);
@@ -88,9 +87,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         notifyItemChanged(position);
     }
 
-    // Phương thức xử lý khi API thất bại
+
     public void updateItemQuantityFailed(int position) {
-        // Xử lý khi cập nhật số lượng thất bại (nếu cần)
+
     }
     @Override
     public int getItemCount() {

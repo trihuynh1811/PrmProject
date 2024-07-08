@@ -29,4 +29,7 @@ public interface CartService {
 
     @PUT(CART+"/down/{cartId}")
     Call<Cart> downQuantity(@Path("cartId") int cartId);
+
+    @GET(CART+"/quantityCart/{id}")
+    Call<Integer> getQuantityInCart(@Path("id") int id);
 }

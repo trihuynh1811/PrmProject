@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -30,15 +31,20 @@ import com.example.prmproject.R;
 import com.example.prmproject.adapter.CartAdapter;
 import com.example.prmproject.adapter.CheckoutAdapter;
 import com.example.prmproject.api.APIClient;
+import com.example.prmproject.dto.CreateOrderRequest;
 import com.example.prmproject.dto.LoginResponse;
+import com.example.prmproject.dto.OrderProductRequest;
+import com.example.prmproject.dto.OrderResponse;
 import com.example.prmproject.models.Cart;
 import com.example.prmproject.service.CartService;
+import com.example.prmproject.service.OrderService;
 import com.example.prmproject.zalopay.Api.CreateOrder;
 
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -58,7 +64,9 @@ public class CheckoutActivity extends AppCompatActivity implements CartAdapter.O
     private LoginResponse loginResponse;
     private TextView btnCheckout, tvTotal, btnzalopay;
     List<Cart> cartList = null;
+    List<OrderProductRequest> orderProductRequestList = new ArrayList<>();
     int totalMoney = 0;
+    private OrderService orderService;
 
     private static final int NOTIFICATION_ID = 0;
     private static final String NOTIFICATION_ID_STRING = "My Notifications";
@@ -91,6 +99,7 @@ public class CheckoutActivity extends AppCompatActivity implements CartAdapter.O
 
         Retrofit retrofit = APIClient.getClient();
         cartService = retrofit.create(CartService.class);
+        orderService = retrofit.create(OrderService.class);
         btnzalopay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,7 +116,8 @@ public class CheckoutActivity extends AppCompatActivity implements CartAdapter.O
                             @Override
                             public void onPaymentSucceeded(String s, String s1, String s2) {
                                 sendNotification("Thông báo", "Giao dịch thành công!");
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                Log.d("cart list", cartList.toString());
+                                CreateNewOrder();
                             }
 
                             @Override
@@ -132,6 +142,7 @@ public class CheckoutActivity extends AppCompatActivity implements CartAdapter.O
 
         fetchCartData();
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -222,11 +233,56 @@ public class CheckoutActivity extends AppCompatActivity implements CartAdapter.O
         NotificationManagerCompat m = NotificationManagerCompat.from(getApplicationContext());
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             m.notify(new Random().nextInt(), myNotification);
-        }
-        else{
+        } else {
             Toast.makeText(getApplicationContext(), "please allow post notification in android manifest", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    private void CreateNewOrder() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("userId", 0);
+        String phone = sharedPreferences.getString("phone", "");
+        String email = sharedPreferences.getString("email", "");
+        String accountName = sharedPreferences.getString("name", "");
+        Log.d("1", "1");
+        Log.d("info", userId + " " + phone + " " + email + " " + accountName);
+        for (Cart item : cartList) {
+            OrderProductRequest orderProductRequest = new OrderProductRequest(item.getId(), item.getQuantity());
+            orderProductRequestList.add(orderProductRequest);
+        }
+        Log.d("2", "2");
+        CreateOrderRequest createOrderRequest = new CreateOrderRequest(
+                totalMoney,
+                userId,
+                phone,
+                email,
+                accountName,
+                orderProductRequestList
+        );
+        Log.d("3", "3");
+        Call<OrderResponse> call = orderService.createOrder(createOrderRequest);
+        Log.d("4", "4");
+
+        call.enqueue(new Callback<OrderResponse>() {
+            @Override
+            public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                OrderResponse orderResponse = response.body();
+                if (response.isSuccessful()) {
+                    Log.d("5", "5");
+                    Log.d("Order response", orderResponse != null ? orderResponse.toString() : "error create order fail no response");
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                }
+                Log.d("5.5", "5.5");
+                Log.e("error", orderResponse.getStatus());
+            }
+
+            @Override
+            public void onFailure(Call<OrderResponse> call, Throwable t) {
+                Log.d("6", "6");
+                Log.e("LoginError", t.getMessage());
+            }
+        });
     }
 
 }

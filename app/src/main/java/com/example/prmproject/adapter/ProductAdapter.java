@@ -52,12 +52,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 holder.productImage.setImageResource(R.drawable.checkout_image_item); // Default placeholder
             }
 
+            // Lưu productID vào ViewHolder
+            holder.productID = product.getProductID();
+
             // Handle click on addToCartButton
             holder.addToCart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (addToCartClickListener != null) {
-                        addToCartClickListener.onAddToCartClick(position);
+                        addToCartClickListener.onAddToCartClick(holder.productID);
                     }
                 }
             });
@@ -73,6 +76,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         ImageView productImage;
         TextView productName, productDescription, productPrice;
         Button addToCart;
+        int productID;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -86,7 +90,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     // Interface to handle click on addToCartButton
     public interface OnAddToCartClickListener {
-        void onAddToCartClick(int position);
+        void onAddToCartClick(int productID);
     }
 }
-

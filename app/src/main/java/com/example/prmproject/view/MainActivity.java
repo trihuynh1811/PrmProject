@@ -6,13 +6,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.prmproject.R;
@@ -23,8 +24,6 @@ import com.example.prmproject.dto.CartResponse;
 import com.example.prmproject.dto.LoginResponse;
 import com.example.prmproject.models.Category;
 import com.example.prmproject.models.Product;
-import com.example.prmproject.models.User;
-import com.example.prmproject.service.AuthService;
 import com.example.prmproject.service.CartService;
 import com.example.prmproject.service.CategoryService;
 import com.example.prmproject.service.ProductService;
@@ -46,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     private ProductAdapter productAdapter;
     private List<Product> productList;
     private LoginResponse loginResponse;
+    private TextView cartBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         productService = APIClient.getClient().create(ProductService.class);
         cartService = APIClient.getClient().create(CartService.class);
 
-        // Get login response from intent
         loginResponse = getIntent().getParcelableExtra("loginResponse");
 
         if (loginResponse != null) {
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         profile = findViewById(R.id.profile);
         btnCart = findViewById(R.id.btnCart);
         rvProductList = findViewById(R.id.rvProductList);
+        cartBadge = findViewById(R.id.cartBadge);
 
         // Set up RecyclerView
         fetchProducts();
@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             }
         });
 
-        // Fetch categories
         fetchCategories();
+        fetchCartQuantity();
     }
 
     private void fetchCategories() {
@@ -127,6 +127,13 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                 if (response.isSuccessful()) {
                     productList = response.body();
                     if (productList != null) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("ProductPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        for (Product product : productList) {
+                            editor.putInt("productID_" + product.getProductID(), product.getProductID());
+                        }
+                        editor.apply();
+
                         productAdapter = new ProductAdapter(productList, MainActivity.this); // Pass MainActivity as listener
                         rvProductList.setAdapter(productAdapter);
                         rvProductList.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -146,35 +153,60 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         });
     }
 
-    // Implement method from ProductAdapter.OnAddToCartClickListener
     @Override
-    public void onAddToCartClick(int position) {
-        if (position != RecyclerView.NO_POSITION && productList != null) {
-            int productID = productList.get(position).getProductID();
-            int customerID = loginResponse.getUserInfo().getUsersID();
+    public void onAddToCartClick(int productID) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("userId", 0);
 
-            AddToCartRequest addToCartRequest = new AddToCartRequest(customerID, productID);
+        AddToCartRequest addToCartRequest = new AddToCartRequest(userId, productID);
 
-            Call<CartResponse> call = cartService.addToCart(addToCartRequest);
-            call.enqueue(new Callback<CartResponse>() {
-                @Override
-                public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
-                    if (response.isSuccessful()) {
-                        CartResponse cartResponse = response.body();
-                        if (cartResponse != null) {
-                            Toast.makeText(MainActivity.this, cartResponse.getStatus(), Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Log.e("MainActivity", "Failed to add to cart: " + response.code());
+        Call<CartResponse> call = cartService.addToCart(addToCartRequest);
+        call.enqueue(new Callback<CartResponse>() {
+            @Override
+            public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
+                if (response.isSuccessful()) {
+                    CartResponse cartResponse = response.body();
+                    if (cartResponse != null) {
+                        Toast.makeText(MainActivity.this, cartResponse.getStatus(), Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    Log.e("MainActivity", "Failed to add to cart: " + response.code());
                 }
+            }
 
-                @Override
-                public void onFailure(Call<CartResponse> call, Throwable t) {
-                    Log.e("MainActivity", "API call failed: " + t.getMessage());
-                    Toast.makeText(MainActivity.this, "Failed to add to cart", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onFailure(Call<CartResponse> call, Throwable t) {
+                Log.e("MainActivity", "API call failed: " + t.getMessage());
+                Toast.makeText(MainActivity.this, "Failed to add to cart", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void fetchCartQuantity() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("userId", 0);
+        Call<Integer> call = cartService.getQuantityInCart(userId);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int quantity = response.body();
+                    Log.d("QuantityResponse", "Quantity :" + quantity);
+                    if (quantity > 0) {
+                        cartBadge.setVisibility(View.VISIBLE);
+                        cartBadge.setText(String.valueOf(quantity));
+                    } else {
+                        cartBadge.setVisibility(View.GONE);
+                    }
+                } else {
+                    Log.e("MainActivity", "Failed to fetch cart quantity: " + response.code());
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Log.e("MainActivity", "API call failed: " + t.getMessage());
+                Log.e("Quantity", "API call failed", t);
+            }
+        });
     }
 }
