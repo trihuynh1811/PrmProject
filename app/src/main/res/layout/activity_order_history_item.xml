@@ -18,15 +18,15 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:padding="16dp" />
+
     <Button
-        android:layout_marginLeft="300dp"
-        android:layout_marginTop="10dp"
         android:id="@+id/BackToOrderHistory"
-        android:backgroundTint="@color/black"
-        app:cornerRadius = "10dp"
-        android:text="Back"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="300dp"
+        android:backgroundTint="@color/black"
+        android:text="Back"
+        app:cornerRadius="10dp" />
 </RelativeLayout>
     <Button
         android:layout_marginTop="10dp"
